@@ -1,3 +1,4 @@
+Attribute VB_Name = "WallStreet"
 
 Sub StockStats()
   Dim tickerName As String
@@ -27,19 +28,23 @@ Sub StockStats()
     ws.Range("J:Q").Interior.Pattern = xlNone
     
     'Summary Column Headers
-    ws.Range("J1:M1").Font.FontStyle = "Bold"
+    ws.Range("J1:Q1").Font.FontStyle = "Bold"
     ws.Range("J1:M1").NumberFormat = "@"
     ws.Range("L:L").NumberFormat = "0.00%"
+    ws.Range("Q2:Q3").NumberFormat = "0.00%"
+    ws.Range("J1:K1").Font.FontStyle = "Bold"
     ws.Range("J1").Value = "Ticker"
     ws.Range("K1").Value = "Yearly Change"
     ws.Range("L1").Value = "Percent Change"
     ws.Range("M1").Value = "Total Stock Volume"
-    ws.Range("J1:K1").Font.FontStyle = "Bold"
+    ws.Range("P1").Value = "Ticker"
+    ws.Range("Q1").Value = "Value"
+
     
     'Worksheet logic
     For i = 2 To lastRow
+      'Ticker Name change
       If ws.Cells(i + 1, 1).Value <> tickerName Then
-        'Intialize first greatest variables. Sheet 1 first ticker
         tickerClose = ws.Cells(i, 6).Value
         ws.Cells(outputRow, 10).Value = tickerName
         ws.Cells(outputRow, 11).Value = tickerClose - tickerOpen
@@ -59,7 +64,7 @@ Sub StockStats()
         
         'Intialize greatest increase/decrease/volume variable.
         'Value sets to first ticker process summary values
-        If ws.Index = 1 And outputRow = 2 Then
+        If outputRow = 2 Then
           greatestIncrease = percentageChange
           greatestDecrease = percentageChange
           greatestTickerIncrease = tickerName
@@ -84,30 +89,23 @@ Sub StockStats()
         tickerOpen = ws.Cells(i + 1, 3).Value
         outputRow = outputRow + 1
         volume = 0
-      Else
+    'No ticker name change
+     Else
         volume = volume + ws.Cells(i, 7)
-      End If
+     End If
     Next i
+    
+   'After traversing workseheet set summay metrics
+   'Set up bonus cells with greatest percentage increase/decrease and volume values.
+    ws.Range("O2").Value = "Greatest % Increase"
+    ws.Range("P2").Value = greatestTickerIncrease
+    ws.Range("Q2").Value = greatestIncrease
+    ws.Range("O3").Value = "Greatest % Decrease"
+    ws.Range("P3").Value = greatestTickerDecrease
+    ws.Range("Q3").Value = greatestDecrease
+    ws.Range("O4").Value = "Greatest Total Volume"
+    ws.Range("P4").Value = greatestTickerVolume
+    ws.Range("Q4").Value = greatestVolume
   Next ws
   
- 'After traversing worksheets set summay metrics
- 
- 'Column headers
-  Worksheets(1).Range("P1").Value = "Ticker"
-  Worksheets(1).Range("Q1").Value = "Value"
-  
- 'Format summary metric cells
-  Worksheets(1).Range("O1:Q1").Font.FontStyle = "Bold"
-  Worksheets(1).Range("Q2:Q3").NumberFormat = "0.00%"
-  
-  Worksheets(1).Range("O2").Value = "Greatest % Increase"
-  Worksheets(1).Range("P2").Value = greatestTickerIncrease
-  Worksheets(1).Range("Q2").Value = greatestIncrease
-  Worksheets(1).Range("O3").Value = "Greatest % Decrease"
-  Worksheets(1).Range("P3").Value = greatestTickerDecrease
-  Worksheets(1).Range("Q3").Value = greatestDecrease
-  Worksheets(1).Range("O4").Value = "Greatest Total Volume"
-  Worksheets(1).Range("P4").Value = greatestTickerVolume
-  Worksheets(1).Range("Q4").Value = greatestVolume
-
 End Sub
